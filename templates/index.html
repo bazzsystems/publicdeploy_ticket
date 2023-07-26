@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="he">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>מערכת כרטיסים חכמה</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+
+    <style>
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(4px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        h1 {
+            text-align: center;
+            color: black;
+            animation: slideInLeft 1s;
+            font-size: 25px;
+            font-weight: normal;
+        }
+        
+        @keyframes slideInLeft {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+        
+        table {
+            animation: slideInRight 1s;
+        }
+        
+        @keyframes slideInRight {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* Add the blur effect to the body when the loading screen is visible */
+        
+        body.loading::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container glassmorphism mt-5">
+        <h1 class="mt-3 mb-3">מערכת כרטיסים חכמה</h1>
+        <form class="mb-3" action="/search" method="POST">
+            <input class="form-control" type="text" name="search_text" placeholder="חפש..." value="{{ search_text }}">
+            <input class="btn btn-primary mt-2" type="submit" value="חפש">
+        </form>
+        {% if data %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    {% for header in headers %}
+                    <th>{{ header }}</th>
+                    {% endfor %}
+                    <th>פעולות</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    {% for cell in row %}
+                    <td>{{ cell }}</td>
+                    {% endfor %}
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('close', client_name=row[3]) }}">סגור</a>
+                        <a class="btn btn-secondary btn-sm" href="{{ url_for('open_system', client_name=row[3]) }}">פתח במערכת</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>לא נמצאו נתונים</p>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='custom.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            // Function to animate the search bar
+            function animateSearchBar() {
+                let searchBar = $('input[name="search_text"]');
+                searchBar.animate({
+                    width: "toggle",
+                }, 500, function() {
+                    // Callback after animation.
+                    // Will start another animation in this case.
+                    searchBar.animate({
+                        width: "toggle",
+                    }, 500);
+                });
+            }
+
+            // Start the animation as soon as the page loads.
+            animateSearchBar();
+
+
+        });
+    </script>
+
+</body>
+
+</html>
